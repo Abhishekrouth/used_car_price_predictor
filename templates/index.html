@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoValue – Used Car Price Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #222327 0%, #100e13 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #121216 0%, #bda8d3 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AutoValue-Used Car Price Predictor</h1>
+        
+        <form method="POST">
+            <div class="grid">
+                <div class="form-group">
+                    <label for="brand">Brand:</label>
+                    <select id="brand" name="brand" required onchange="updateModels()">
+                        <option value="">Select Brand</option>
+                        {% if options and options.brands %}
+                            {% for brand in options.brands %}
+                                <option value="{{ brand }}">{{ brand }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="Honda">Honda</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Maruti">Maruti</option>
+                            <option value="Hyundai">Hyundai</option>
+                            <option value="Ford">Ford</option>
+                        {% endif %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="model">Model:</label>
+                    <select id="model" name="model" required>
+                        <option value="">First select a brand</option>
+                    </select>
+                    <small style="color: #666; font-size: 12px;">Models will appear after selecting a brand</small>
+                </div>
+            </div>
+            
+            <div class="grid">
+                <div class="form-group">
+                    <label for="year">Year:</label>
+                    <input type="number" id="year" name="year" min="1990" max="2024" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age (years):</label>
+                    <input type="number" id="age" name="age" min="0" max="35" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="kmDriven">Kilometers Driven:</label>
+                <input type="number" id="kmDriven" name="kmDriven" min="0" required>
+            </div>
+            
+            <div class="grid">
+                <div class="form-group">
+                    <label for="transmission">Transmission:</label>
+                    <select id="transmission" name="transmission" required>
+                        <option value="">Select Transmission</option>
+                        {% if options and options.transmissions %}
+                            {% for transmission in options.transmissions %}
+                                <option value="{{ transmission }}">{{ transmission }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="Manual">Manual</option>
+                            <option value="Automatic">Automatic</option>
+                        {% endif %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="owner">Owner:</label>
+                    <select id="owner" name="owner" required>
+                        <option value="">Select Owner Type</option>
+                        {% if options and options.owners %}
+                            {% for owner in options.owners %}
+                                <option value="{{ owner }}">{{ owner }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
+                            <option value="third">Third</option>
+                            <option value="fourth">Fourth</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="fuel">Fuel Type:</label>
+                <select id="fuel" name="fuel" required>
+                    <option value="">Select Fuel Type</option>
+                    {% if options and options.fuels %}
+                        {% for fuel in options.fuels %}
+                            <option value="{{ fuel }}">{{ fuel }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="CNG">CNG</option>
+                        <option value="Electric">Electric</option>
+                    {% endif %}
+                </select>
+            </div>
+            
+            <button type="submit">Predict Price</button>
+        </form>
+        
+        {% if error_message %}
+            <div class="result error">
+                <h3>Error:</h3>
+                <p>{{ error_message }}</p>
+            </div>
+        {% endif %}
+        
+        {% if prediction %}
+            <div class="result success">
+                <h3>Predicted Car Price:</h3>
+                <div class="price">₹ {{ "{:,}".format(prediction|int) }}</div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        // Brand-model mapping from server
+        const brandModels = {{ brand_models | tojson }};
+        
+        // Update models when brand changes
+        function updateModels() {
+            const brandSelect = document.getElementById('brand');
+            const modelSelect = document.getElementById('model');
+            const selectedBrand = brandSelect.value;
+            
+            // Clear existing options
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            
+            if (selectedBrand && brandModels[selectedBrand]) {
+                // Add models for selected brand
+                brandModels[selectedBrand].forEach(function(model) {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+                modelSelect.disabled = false;
+            } else {
+                modelSelect.innerHTML = '<option value="">First select a brand</option>';
+                modelSelect.disabled = true;
+            }
+        }
+        
+        // Auto-calculate age based on year
+        document.getElementById('year').addEventListener('input', function() {
+            const year = parseInt(this.value);
+            const currentYear = new Date().getFullYear();
+            const age = currentYear - year;
+            if (age >= 0) {
+                document.getElementById('age').value = age;
+            }
+        });
+        
+        // Initialize models dropdown as disabled
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('model').disabled = true;
+        });
+    </script>
+</body>
+</html>
