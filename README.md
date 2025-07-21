@@ -22,5 +22,3 @@ This project is a machine learning-based web application developed using Flask t
 - joblib
 - HTML (Jinja2 templates)
 
-## Directory Structure
-
